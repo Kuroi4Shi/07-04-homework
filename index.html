@@ -9,13 +9,14 @@
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script type="text/javascript" src="data.js"></script>
 
-
     <title>07.04. 4C homework!</title>
 </head>
 <body>
 <div class="jumbotron jumbotron-fluid">
     <div class="container">
         <h1 class="display-4">Domácí úkol pro 4.C</h1>
+        <br>
+        <h2 style="color: red;">Funguje to nejlépe z leva do prava!</h2>
         <p>
             <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                 Zadání
@@ -64,7 +65,18 @@
             </select>
         </div>
         <div class="col">
-            <input class="btn btn-primary btn-block" type="reset" value="Reset table">
+            <select id="price-select" class="custom-select">
+                <option Selected>Cena</option>
+                <option value="1000000">Pod 1 milion</option>
+                <option value="3000000">Pod 3 miliony</option>
+                <option value="5000000">Pod 5 milionu</option>
+                <option value="8000000">Pod 8 milionu</option>
+                <option value="10000000">Pod 10 milionu</option>
+                <option value="1">Nad 10 milionu</option>
+            </select>
+        </div>
+        <div class="col">
+            <input class="btn btn-primary btn-block reset-button" type="reset" value="Reset table">
         </div>
     </div>
 </div>
@@ -94,16 +106,15 @@
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
         integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
         crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-        crossorigin="anonymous"></script>
 <script>
     // object with loaded data - DO NOT change
     const jsonData = JSON.parse(data);
+
     // empty data table
     function emptyTable() {
       $('#data-content tbody').empty();
     }
+
     // init selects
     function prepareSelects() {
       const selectTypes = [];
@@ -130,7 +141,8 @@
         }
       }
     }
-    // this function create table row
+
+    // this function creates table row
     function addRow(data) {
       const rowContent = '<tr>' +
               `<td>${data.localUniqueId}</td>` +
@@ -147,21 +159,91 @@
       addRow(d);
     }
     prepareSelects();
-    $('button[type="reset"]').click(function () {
+
+    $('.reset-button').click(function () {
       emptyTable();
       for (const d of jsonData) {
         addRow(d);
       }
     });
-    // Here will fallow function for filtering
+
+    // Here will follow functions for filtering
+
+    var typeVar;
     $('#type-select').change(function () {
       const selectedType = $(this).find('option:selected');
-      alert(`Set type: ${selectedType.text()}`);
+      typeVar = selectedType.text();
+
       emptyTable();
-      // TODO: filter data
-      console.log(jsonData);
+
+      for(const element of jsonData) {
+        if(selectedType.text() == element.type){
+          addRow(element);
+        }
+      }
+    });
+
+    var subTypeVar;
+    $('#sub-type-select').change(function () {
+      const selectedSubType = $(this).find('option:selected');
+      subTypeVar = selectedSubType.text();
+
+      emptyTable();
+
+      for(const element of jsonData) {
+        if(selectedSubType.text() == element.subtype && typeVar == element.type){
+          addRow(element);
+        }
+      }
+    });
+
+    var offerTypeVar;
+    $('#offer-type-select').change(function () {
+      const selectedOfferType = $(this).find('option:selected');
+      offerTypeVar = selectedOfferType.text();
+
+      emptyTable();
+
+      for(const element of jsonData) {
+        if(selectedOfferType.text() == element.offerType && subTypeVar == element.subtype && typeVar == element.type){
+          addRow(element);
+        }
+      }
+    });
+
+    var energyClassVar;
+    $('#energy-class-select').change(function () {
+      const selectedEnergyClass = $(this).find('option:selected');
+      energyClassVar = selectedEnergyClass.text();
+
+      emptyTable();
+
+      for(const element of jsonData) {
+        if(selectedEnergyClass.text() == element.energyClass && offerTypeVar == element.offerType && subTypeVar == element.subtype && typeVar == element.type){
+          addRow(element);
+        }
+      }
+    });
+
+    $('#price-select').change(function () {
+      const selectedPrice = $(this).find('option:selected');
+
+      emptyTable();
+
+      for(const element of jsonData) {
+        if(selectedPrice.val() == 1 && energyClassVar == element.energyClass && offerTypeVar == element.offerType && subTypeVar == element.subtype && typeVar == element.type) {
+          if(element.price > 10000000){
+            addRow(element);
+          }
+        }else if(selectedPrice.val() > element.price && energyClassVar == element.energyClass && offerTypeVar == element.offerType && subTypeVar == element.subtype && typeVar == element.type) {
+          addRow(element);
+       }
+      }
     });
   });
 </script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
 </body>
 </html>
